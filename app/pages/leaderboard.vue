@@ -27,16 +27,22 @@ onMounted(() => {
 
 <template>
   <div class="py-8">
-    <div class="mb-8 text-center">
-      <h1 class="text-3xl md:text-5xl font-bold mb-4">Leaderboard</h1>
-      <p class="text-gray-400">The highest rated generations of all time.</p>
+    <div class="mb-12 text-center">
+      <h1 class="text-3xl md:text-5xl font-bold mb-4 font-display">Leaderboard</h1>
+      <p class="text-gray-400 max-w-lg mx-auto mb-8">The highest rated generations of all time. Compete to reach the top of the arena.</p>
+      
+      <!-- Elo Distribution Chart -->
+      <div v-if="!loading && generations.length > 0" class="max-w-md mx-auto p-6 glass rounded-2xl border border-gray-200 dark:border-white/10">
+         <h3 class="text-xs uppercase tracking-wider text-gray-400 font-bold mb-2 text-left">Rating Distribution</h3>
+         <EloChart :generations="generations" />
+      </div>
     </div>
 
     <div v-if="loading" class="space-y-4">
-      <div v-for="i in 5" :key="i" class="h-24 bg-gray-900 rounded-xl animate-pulse"></div>
+      <div v-for="i in 5" :key="i" class="h-24 bg-gray-100 dark:bg-gray-900 rounded-xl animate-pulse"></div>
     </div>
 
-    <div v-else class="grid gap-6">
+    <div v-else class="grid gap-4 max-w-4xl mx-auto">
       <div 
         v-for="(gen, index) in generations" 
         :key="gen.id"

@@ -44,21 +44,42 @@ const fetchPair = async () => {
 // Let's use the 'get_random_pair' concept but implemented in JS for now (fetch 20, pick 2).
 const fetchRandomPair = async () => {
   loading.value = true
-  // Fetch up to 50 items and pick 2 random ones
+  // Fetch a larger pool to find good matches
   const { data, error } = await client
     .from('generations')
     .select('*')
-    .limit(50)
+    .limit(50) 
   
   if (error) {
     console.error('Error fetching pair:', error)
+    loading.value = false
     return
   }
   
   if (data && data.length >= 2) {
-    // Shuffle and pick 2
-    const shuffled = data.sort(() => 0.5 - Math.random())
-    pair.value = shuffled.slice(0, 2)
+    // 1. Pick first candidate entirely at random
+    const pool = [...data]
+    const indexA = Math.floor(Math.random() * pool.length)
+    const candidateA = pool[indexA]
+    
+    // Remove A from pool
+    pool.splice(indexA, 1)
+    
+    // 2. find candidate B with closest Elo (Smart Matchmaking)
+    // Add a bit of randomness so it's not ALWAYS the exact same closest match
+    // Sort remaining pool by Elo difference
+    const sortedByEloDiff = pool.sort((a, b) => {
+        const diffA = Math.abs(a.elo_rating - candidateA.elo_rating)
+        const diffB = Math.abs(b.elo_rating - candidateA.elo_rating)
+        return diffA - diffB
+    })
+    
+    // Pick from the top 3 closest matches to add variety
+    // If fewer than 3, just pick from what's available
+    const topChoices = sortedByEloDiff.slice(0, 3)
+    const candidateB = topChoices[Math.floor(Math.random() * topChoices.length)]
+    
+    pair.value = [candidateA, candidateB]
   }
   loading.value = false
 }
