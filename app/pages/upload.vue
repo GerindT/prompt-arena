@@ -43,15 +43,64 @@ const processFile = (selectedFile: File) => {
   previewUrl.value = URL.createObjectURL(selectedFile)
 }
 
+const userReady = ref(false)
+
+onMounted(async () => {
+  // 1. Check if we already have the user from the composable
+  if (user.value?.id) {
+    userReady.value = true
+    return
+  }
+
+  // 2. If not, force a check with Supabase directly
+  const { data } = await client.auth.getUser()
+  if (data.user?.id) {
+    userReady.value = true
+  }
+})
+
+// 3. Also watch the composable for reactive updates
+watch(user, (newUser) => {
+  if (newUser?.id) {
+    userReady.value = true
+  }
+}, { immediate: true })
+
 const uploadImage = async () => {
-  if (!file.value || !user.value) return
+  if (!file.value) {
+    errorMsg.value = 'No file selected'
+    return
+  }
+  
+  if (!userReady.value) {
+    errorMsg.value = 'Session initializing... please wait a moment.'
+    return
+  }
+  
+  // 1. Try to get ID from reactive user
+  let userId = user.value?.id
+
+  // 2. Fallback: Fetch explicitly if missing
+  if (!userId) {
+     console.log('User ref missing, fetching explicitly...')
+     const { data } = await client.auth.getUser()
+     userId = data.user?.id
+  }
+
+  // 3. Final Check
+  if (!userId) {
+    errorMsg.value = 'Critical Error: User ID missing. Please refresh.'
+    return
+  }
   
   uploading.value = true
   errorMsg.value = ''
   
   try {
+    console.log('Starting upload for user:', userId)
+    
     const fileExt = file.value.name.split('.').pop()
-    const fileName = `${user.value.id}/${Date.now()}.${fileExt}`
+    const fileName = `${userId}/${Date.now()}.${fileExt}`
     
     // 1. Upload to Storage
     const { error: uploadError } = await client.storage
@@ -71,20 +120,21 @@ const uploadImage = async () => {
       .insert({
         content: publicUrl,
         type: 'image',
-        user_id: user.value.id,
+        user_id: userId,
         elo_rating: 1200 // Default rating
       })
       
     if (dbError) throw dbError
     
-    // Success! Redirect to profile
-    router.push('/profile')
+    // Add a small delay to show success state
+    setTimeout(() => {
+        router.push('/profile')
+    }, 1000)
     
   } catch (error: any) {
     errorMsg.value = error.message
-  } finally {
     uploading.value = false
-  }
+  } 
 }
 </script>
 
@@ -134,10 +184,16 @@ const uploadImage = async () => {
           {{ errorMsg }}
         </div>
 
-        <div class="mt-8 flex justify-center">
+        <div class="mt-8 flex justify-between items-center">
+            <!-- Session Status Indicator -->
+            <div class="text-xs font-mono" :class="userReady ? 'text-green-500' : 'text-yellow-500'">
+                <span v-if="userReady" class="flex items-center gap-1"><Icon name="ph:circle-fill" size="8" /> Ready</span>
+                <span v-else class="flex items-center gap-1"><Icon name="eos-icons:loading" size="12" /> Connecting...</span>
+            </div>
+
           <button 
             @click="uploadImage" 
-            :disabled="uploading"
+            :disabled="uploading || !userReady"
             class="w-full sm:w-auto min-w-[200px] py-4 px-8 rounded-xl bg-gradient-to-r from-primary-600 to-purple-600 text-white font-bold shadow-xl shadow-primary-500/30 hover:shadow-primary-500/40 transform transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
           >
              <span v-if="uploading" class="flex items-center justify-center gap-2">
