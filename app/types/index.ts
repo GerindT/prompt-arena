@@ -3,6 +3,7 @@ export interface Generation {
   content: string
   type: 'image' | 'text'
   elo_rating: number
+  user_id?: string
   created_at: string
 }
 

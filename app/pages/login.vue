@@ -45,12 +45,22 @@ const handleAuth = async () => {
       if (error) throw error
       successMsg.value = 'Verification link sent! Please check your email.'
     } else {
-      const { error } = await client.auth.signInWithPassword({
+      const { error, data } = await client.auth.signInWithPassword({
         email: email.value,
         password: password.value
       })
       if (error) throw error
-      // watchEffect/watch will handle redirect
+      
+      // Verification: Wait until the user object is actually updated
+      if (data.user) {
+         // Force update user ref if needed (sometimes it lags)
+         const { data: sessionData } = await client.auth.getSession()
+         if (sessionData.session) {
+             // Explicitly wait a tick for Nuxt to sync
+             await new Promise(resolve => setTimeout(resolve, 500))
+             router.push('/profile')
+         }
+      }
     }
   } catch (error: any) {
     if (error.message.includes('Invalid login credentials')) {

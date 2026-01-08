@@ -1,3 +1,7 @@
+<script setup lang="ts">
+const user = useSupabaseUser()
+</script>
+
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-dark-950 font-sans selection:bg-primary-500 selection:text-white transition-colors duration-300 flex flex-col">
     <!-- Navbar -->
@@ -39,9 +43,16 @@
           <div class="flex items-center gap-3">
             <ThemeToggle />
             
-            <NuxtLink to="/login" class="hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white transition-all duration-200 bg-gray-900 dark:bg-white dark:text-gray-900 rounded-full hover:bg-gray-800 dark:hover:bg-gray-100 shadow-lg shadow-gray-900/20 dark:shadow-white/10">
-              Sign In
-            </NuxtLink>
+            <template v-if="user">
+              <NuxtLink to="/profile" class="hidden sm:inline-flex items-center justify-center h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 font-bold border border-primary-200 dark:border-primary-500/30 hover:shadow-lg shadow-primary-500/20 transition-all">
+                {{ user.email?.charAt(0).toUpperCase() }}
+              </NuxtLink>
+            </template>
+            <template v-else>
+              <NuxtLink to="/login" class="hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white transition-all duration-200 bg-gray-900 dark:bg-white dark:text-gray-900 rounded-full hover:bg-gray-800 dark:hover:bg-gray-100 shadow-lg shadow-gray-900/20 dark:shadow-white/10">
+                Sign In
+              </NuxtLink>
+            </template>
           </div>
         </div>
       </div>
