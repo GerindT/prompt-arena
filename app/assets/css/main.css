@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', sans-serif;
+  @apply bg-white text-gray-900 transition-colors duration-300;
+}
+
+.dark body {
+  @apply bg-dark-950 text-white;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-lg;
+}
+.dark .glass {
+  @apply bg-gray-900/70 border-white/10 shadow-black/50;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full dark:bg-gray-800;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-700;
+}

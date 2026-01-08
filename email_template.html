@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    .header { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); padding: 40px; text-align: center; }
+    .header h1 { color: white; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+    .content { padding: 40px; text-align: center; color: #374151; }
+    .button { display: inline-block; background-color: #6366f1; color: white !important; font-weight: 600; text-decoration: none; padding: 12px 32px; border-radius: 99px; margin-top: 24px; transition: opacity 0.2s; }
+    .button:hover { opacity: 0.9; }
+    .footer { background-color: #f3f4f6; padding: 24px; text-align: center; font-size: 12px; color: #9ca3af; }
+    .link { color: #6366f1; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Welcome to Prompt Arena 🎨</h1>
+    </div>
+    <div class="content">
+      <h2 style="margin-top: 0; color: #111827;">Confirm your email</h2>
+      <p style="margin-bottom: 24px; line-height: 1.6;">
+        You're just one step away from voting and creating in the arena. 
+        Please confirm your email address to get started.
+      </p>
+      <a href="{{ .ConfirmationURL }}" class="button">Confirm Email</a>
+      <p style="margin-top: 32px; font-size: 14px; color: #6b7280;">
+        If you didn't request this, you can safely ignore this email.
+      </p>
+    </div>
+    <div class="footer">
+      <p>&copy; 2026 Prompt Arena. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
